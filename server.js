@@ -14,11 +14,11 @@ app.use(express.static(__dirname)); // serve os HTMLs e JS
 
 // Conexão com MariaDB
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',       // troque pelo seu
-    password: 'bolonhesa',     // troque pela sua senha
-    database: 'kahoot_fak',     // troque pelo seu banco
-    port: 3306
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,       // troque pelo seu
+    password: process.env.DB_PASSWORD,     // troque pela sua senha
+    database: process.env.DB_NAME,     // troque pelo seu banco
+    port: process.env.DB_PORT
 });
 
 db.connect(err => {
