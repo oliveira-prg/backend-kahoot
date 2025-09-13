@@ -12,6 +12,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname)); // serve os HTMLs e JS
 
+console.log("Tentando conectar com:", {
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  database: process.env.DB_NAME
+});
 // Conexão com MariaDB
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
