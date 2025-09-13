@@ -12,43 +12,24 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-// 🔽🔽🔽 VERIFICAÇÃO DAS VARIÁVEIS COM UNDERLINE 🔽🔽🔽
-console.log("Variáveis de ambiente disponíveis:", {
-  MYSQL_HOST: process.env.MYSQL_HOST,
-  MYSQL_PORT: process.env.MYSQL_PORT,
-  MYSQL_USER: process.env.MYSQL_USER,
-  MYSQL_DATABASE: process.env.MYSQL_DATABASE,
-  MYSQL_PASSWORD: process.env.MYSQL_PASSWORD ? '***HAS_PASSWORD***' : 'MISSING'
-});
+// 🔽🔽🔽 VERIFICAÇÃO SIMPLES DA MYSQL_URL 🔽🔽🔽
+console.log("MYSQL_URL disponível:", process.env.MYSQL_URL ? '✅ SIM' : '❌ NÃO');
 
-// 🔽🔽🔽 VALIDAÇÃO COM OS NOMES CORRETOS (COM UNDERLINE) 🔽🔽🔽
-if (!process.env.MYSQL_HOST || !process.env.MYSQL_USER || !process.env.MYSQL_PASSWORD || !process.env.MYSQL_DATABASE) {
-  console.error('❌ VARIÁVEIS DE AMBIENTE FALTANDO! Verifique a configuração na Railway.');
-  console.error('Variáveis necessárias: MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE');
+if (!process.env.MYSQL_URL) {
+  console.error('❌ VARIÁVEL MYSQL_URL FALTANDO!');
+  console.error('Adicione a referência para MYSQL_URL nas variáveis do Railway');
   process.exit(1);
 }
 
-// 🔽🔽🔽 CONEXÃO COM OS NOMES CORRETOS (COM UNDERLINE) 🔽🔽🔽
-const db = mysql.createConnection({
-    host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_USER,  
-    password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DATABASE,
-    port: process.env.MYSQL_PORT || 3306
-});
+// 🔽🔽🔽 CONEXÃO SIMPLES COM MYSQL_URL 🔽🔽🔽
+const db = mysql.createConnection(process.env.MYSQL_URL);
 
 db.connect(err => {
     if (err) {
-        console.error('Erro ao conectar no MySQL:', err);
-        console.error('Detalhes da conexão:', {
-            host: process.env.MYSQL_HOST,
-            port: process.env.MYSQL_PORT,
-            user: process.env.MYSQL_USER,
-            database: process.env.MYSQL_DATABASE
-        });
+        console.error('❌ Erro ao conectar no MySQL:', err.message);
         process.exit(1);
     }
-    console.log('✅ Conectado ao MySQL!');
+    console.log('✅ Conectado ao MySQL via URL!');
 });
 
 // Rota POST para salvar nome
