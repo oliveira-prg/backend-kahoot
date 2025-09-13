@@ -3,8 +3,6 @@ const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2');
 const path = require('path');
-// REMOVA O DOTENV - na Railway as variáveis são injetadas automaticamente
-// require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3036;
@@ -14,46 +12,44 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-// 🔽🔽🔽 CORREÇÃO CRÍTICA - VERIFICAÇÃO DE VARIÁVEIS 🔽🔽🔽
+// 🔽🔽🔽 VERIFICAÇÃO DAS VARIÁVEIS COM UNDERLINE 🔽🔽🔽
 console.log("Variáveis de ambiente disponíveis:", {
-  MYSQLHOST: process.env.MYSQLHOST,
-  MYSQLPORT: process.env.MYSQLPORT,
-  MYSQLUSER: process.env.MYSQLUSER,
-  MYSQLDATABASE: process.env.MYSQLDATABASE,
-  MYSQLPASSWORD: process.env.MYSQLPASSWORD ? '***HAS_PASSWORD***' : 'MISSING'
+  MYSQL_HOST: process.env.MYSQL_HOST,
+  MYSQL_PORT: process.env.MYSQL_PORT,
+  MYSQL_USER: process.env.MYSQL_USER,
+  MYSQL_DATABASE: process.env.MYSQL_DATABASE,
+  MYSQL_PASSWORD: process.env.MYSQL_PASSWORD ? '***HAS_PASSWORD***' : 'MISSING'
 });
 
-// 🔽🔽🔽 CORREÇÃO - VALIDAÇÃO ANTES DE CONECTAR 🔽🔽🔽
-if (!process.env.MYSQLHOST || !process.env.MYSQLUSER || !process.env.MYSQLPASSWORD || !process.env.MYSQLDATABASE) {
+// 🔽🔽🔽 VALIDAÇÃO COM OS NOMES CORRETOS (COM UNDERLINE) 🔽🔽🔽
+if (!process.env.MYSQL_HOST || !process.env.MYSQL_USER || !process.env.MYSQL_PASSWORD || !process.env.MYSQL_DATABASE) {
   console.error('❌ VARIÁVEIS DE AMBIENTE FALTANDO! Verifique a configuração na Railway.');
-  console.error('Variáveis necessárias: MYSQLHOST, MYSQLUSER, MYSQLPASSWORD, MYSQLDATABASE');
+  console.error('Variáveis necessárias: MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE');
   process.exit(1);
 }
 
-// Conexão com MySQL
+// 🔽🔽🔽 CONEXÃO COM OS NOMES CORRETOS (COM UNDERLINE) 🔽🔽🔽
 const db = mysql.createConnection({
-    host: process.env.MYSQLHOST,
-    user: process.env.MYSQLUSER,  
-    password: process.env.MYSQLPASSWORD,
-    database: process.env.MYSQLDATABASE,
-    port: process.env.MYSQLPORT || 3306 // fallback apenas para a porta
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,  
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
+    port: process.env.MYSQL_PORT || 3306
 });
 
 db.connect(err => {
     if (err) {
         console.error('Erro ao conectar no MySQL:', err);
         console.error('Detalhes da conexão:', {
-            host: process.env.MYSQLHOST,
-            port: process.env.MYSQLPORT,
-            user: process.env.MYSQLUSER,
-            database: process.env.MYSQLDATABASE
+            host: process.env.MYSQL_HOST,
+            port: process.env.MYSQL_PORT,
+            user: process.env.MYSQL_USER,
+            database: process.env.MYSQL_DATABASE
         });
         process.exit(1);
     }
     console.log('✅ Conectado ao MySQL!');
 });
-
-// ... (o restante do código permanece igual) ...
 
 // Rota POST para salvar nome
 app.post('/nomes', (req, res) => {
