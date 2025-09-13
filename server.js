@@ -3,39 +3,57 @@ const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2');
 const path = require('path');
-require('dotenv').config();
+// REMOVA O DOTENV - na Railway as variáveis são injetadas automaticamente
+// require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3036; // porta HTTP para o navegador
+const PORT = process.env.PORT || 3036;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname)); // serve os HTMLs e JS
+app.use(express.static(__dirname));
 
-console.log("Tentando conectar com:", {
-  host: process.env.MYSQLHOST, // CORRIGIDO
-  port: process.env.MYSQLPORT, // CORRIGIDO
-  user: process.env.MYSQLUSER, // CORRIGIDO
-  database: process.env.MYSQLDATABASE // CORRIGIDO
+// 🔽🔽🔽 CORREÇÃO CRÍTICA - VERIFICAÇÃO DE VARIÁVEIS 🔽🔽🔽
+console.log("Variáveis de ambiente disponíveis:", {
+  MYSQLHOST: process.env.MYSQLHOST,
+  MYSQLPORT: process.env.MYSQLPORT,
+  MYSQLUSER: process.env.MYSQLUSER,
+  MYSQLDATABASE: process.env.MYSQLDATABASE,
+  MYSQLPASSWORD: process.env.MYSQLPASSWORD ? '***HAS_PASSWORD***' : 'MISSING'
 });
 
-// Conexão com MariaDB - VARIÁVEIS CORRIGIDAS
+// 🔽🔽🔽 CORREÇÃO - VALIDAÇÃO ANTES DE CONECTAR 🔽🔽🔽
+if (!process.env.MYSQLHOST || !process.env.MYSQLUSER || !process.env.MYSQLPASSWORD || !process.env.MYSQLDATABASE) {
+  console.error('❌ VARIÁVEIS DE AMBIENTE FALTANDO! Verifique a configuração na Railway.');
+  console.error('Variáveis necessárias: MYSQLHOST, MYSQLUSER, MYSQLPASSWORD, MYSQLDATABASE');
+  process.exit(1);
+}
+
+// Conexão com MySQL
 const db = mysql.createConnection({
-    host: process.env.MYSQLHOST, // CORRIGIDO
-    user: process.env.MYSQLUSER, // CORRIGIDO  
-    password: process.env.MYSQLPASSWORD, // CORRIGIDO
-    database: process.env.MYSQLDATABASE, // CORRIGIDO
-    port: process.env.MYSQLPORT // CORRIGIDO
+    host: process.env.MYSQLHOST,
+    user: process.env.MYSQLUSER,  
+    password: process.env.MYSQLPASSWORD,
+    database: process.env.MYSQLDATABASE,
+    port: process.env.MYSQLPORT || 3306 // fallback apenas para a porta
 });
 
 db.connect(err => {
     if (err) {
-        console.error('Erro ao conectar no MariaDB:', err);
+        console.error('Erro ao conectar no MySQL:', err);
+        console.error('Detalhes da conexão:', {
+            host: process.env.MYSQLHOST,
+            port: process.env.MYSQLPORT,
+            user: process.env.MYSQLUSER,
+            database: process.env.MYSQLDATABASE
+        });
         process.exit(1);
     }
-    console.log('Conectado ao MariaDB!');
+    console.log('✅ Conectado ao MySQL!');
 });
+
+// ... (o restante do código permanece igual) ...
 
 // Rota POST para salvar nome
 app.post('/nomes', (req, res) => {
@@ -84,5 +102,5 @@ app.get('/podio', (req, res) => {
 
 // Inicia servidor HTTP
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Servidor HTTP rodando na porta ${PORT}`);
+    console.log(`🚀 Servidor HTTP rodando na porta ${PORT}`);
 });
